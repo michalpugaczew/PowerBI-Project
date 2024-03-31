@@ -201,19 +201,77 @@ A full description of the DAX metrics used can be found on the last page of the 
 # Tab description
 
 
-**Sales Cockpit** - this is general dashboard providing aggregated data on different level. You can choose from if you want to see results for every Category, Country, Customers, Employee, Products or Suppliers. Additionally, you can switch the metrics and you can choose between sum and average
+**Sales Cockpit** - This is general dashboard providing aggregated data on different level. You can choose from if you want to see results for every Category, Country, Customers, Employee, Products or Suppliers. Additionally, you can switch the metrics and you can choose between sum and average
 
-**Shippers** - main purpose of this tab is monitoring accuracy of the ships and how exactly all three companies were performing during the year
+**Shippers** - Main purpose of this tab is monitoring accuracy of the ships and how exactly all three companies were performing during the year
 
-**Orders** - orders master data, you can see full information about each order, e.g. order date, employee involved or realization time
+**Orders** - Orders master data, you can see full information about each order, e.g. order date, employee involved or realization time
 
-**Stock Management** - the tab was created to maintain current stocks, you can see red highlited items that are overstocked on the warehouse and also information about the last date the product has been ordered
+**Stock Management** - The tab was created to help the business unit monitor current stocks amounts, you can see red highlited items that are overstocked on the warehouse and also information about the last date the product has been ordered
 
-**Promotion History** - you can follow the history of discounts for each article during the year. To make the promotion history easier to manage, there were created four discounts group which has been defined on the right side of the page
+**Promotion History** - You can follow the history of discounts for each article during the year. To make the promotion history easier to manage, there were created four discounts group which has been defined on the right side of the page
 
 **Measures Catalog** - description of every measure that has been created and used in this report
 
 
-# Custom analyze - Year 1997
+# Custom SQL analyze - year 1997
 
+Employee productivity:
+
+        SELECT Concat(e.firstname, ' ', e.lastname) AS Employee,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 1 THEN o.orderid
+                              END)                  January,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 2 THEN o.orderid
+                              END)                  February,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 3 THEN o.orderid
+                              END)                  March,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 4 THEN o.orderid
+                              END)                  April,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 5 THEN o.orderid
+                              END)                  May,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 6 THEN o.orderid
+                              END)                  June,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 7 THEN o.orderid
+                              END)                  July,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 8 THEN o.orderid
+                              END)                  August,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 9 THEN o.orderid
+                              END)                  September,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 10 THEN o.orderid
+                              END)                  October,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 11 THEN o.orderid
+                              END)                  November,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) = 12 THEN o.orderid
+                              END)                  December,
+               Count(DISTINCT CASE
+                                WHEN Month(o.orderdate) BETWEEN 1 AND 12 THEN o.orderid
+                              END)                  Total
+        FROM   orders o
+               JOIN [order details] od
+                 ON o.orderid = od.orderid
+               JOIN employees e
+                 ON o.employeeid = e.employeeid
+        WHERE  Year(o.orderdate) = 1997
+        GROUP  BY Concat(e.firstname, ' ', e.lastname)
+        ORDER  BY 14 DESC; 
+
+
+Output:
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/e50439c9-df77-449e-8a23-a34d8e504787)
+
+
+As we can see, Margaret Peacock was the one with the most orders completed in the whole year 
 --TBC--
