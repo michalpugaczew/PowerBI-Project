@@ -66,8 +66,6 @@ The table was created with the following SQL query:
     )
 
 
-A full description of the DAX metrics used can be found on the last page of the report.
-
 
 # Calculations correctness check - DAX vs SQL
 
@@ -198,6 +196,22 @@ PowerBI Calculations:
 
 
 A full description of the DAX metrics used can be found on the last page of the report.
+
+
+# Tab description
+
+
+**Sales Cockpit** - this is general dashboard providing aggregated data on different level. You can choose from if you want to see results for every Category, Country, Customers, Employee, Products or Suppliers. Additionally, you can switch the metrics and you can choose between sum and average
+
+**Shippers** - main purpose of this tab is monitoring accuracy of the ships and how exactly all three companies were performing during the year
+
+**Orders** - orders master data, you can see full information about each order, e.g. order date, employee involved or realization time
+
+**Stock Management** - the tab was created to maintain current stocks, you can see red highlited items that are overstocked on the warehouse and also information about the last date the product has been ordered
+
+**Promotion History** - you can follow the history of discounts for each article during the year. To make the promotion history easier to manage, there were created four discounts group which has been defined on the right side of the page
+
+**Measures Catalog** - description of every measure that has been created and used in this report
 
 
 # Custom analyze - Year 1997
