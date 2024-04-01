@@ -216,7 +216,7 @@ A full description of the DAX metrics used can be found on the last page of the 
 
 # Custom SQL analyze - year 1997
 
-Employee productivity:
+**Employee productivity:**
 
         SELECT Concat(e.firstname, ' ', e.lastname) AS Employee,
                Count(DISTINCT CASE
@@ -268,10 +268,139 @@ Employee productivity:
         ORDER  BY 14 DESC; 
 
 
-Output:
+**Output:**
 
 ![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/e50439c9-df77-449e-8a23-a34d8e504787)
 
 
-As we can see, Margaret Peacock was the one with the most orders completed in the whole year 
---TBC--
+As we can see, Margaret Peacock was the one with the most orders completed in the whole year. Now let's check, whose orders earned the biggest revenue for the company:
+
+
+        WITH employeeanalyze
+             AS (SELECT Concat(e.firstname, ' ', e.lastname)                  Employee,
+                        Sum(od.quantity * od.unitprice * ( 1 - od.discount )) Sales,
+                        Avg(od.quantity * od.unitprice * ( 1 - od.discount )) AvgSales,
+                        (SELECT Avg(od.quantity * od.unitprice * ( 1 - od.discount ))
+                         FROM   [order details] od
+                                JOIN orders o
+                                  ON o.orderid = od.orderid
+                         WHERE  Year(o.orderdate) = 1997)
+                        'TotalAvgSales'
+                 FROM   employees e
+                        JOIN orders o
+                          ON o.employeeid = e.employeeid
+                        JOIN [order details] od
+                          ON od.orderid = o.orderid
+                 WHERE  Year(o.orderdate) = 1997
+                 GROUP  BY Concat(e.firstname, ' ', e.lastname))
+        SELECT employee,
+               Format(sales, '### ###')         Sales,
+               Format(avgsales, '### ###')      AvgSales,
+               Format(totalavgsales, '### ###') 'TotalAvgSales',
+               CASE
+                 WHEN Round(avgsales, 0) > Round(totalavgsales, 0) THEN '+'
+                 WHEN Round(avgsales, 0) = Round(totalavgsales, 0) THEN '='
+                 ELSE '-'
+               END                              AS Deviation
+        FROM   employeeanalyze
+        ORDER  BY Cast(sales AS INT) DESC; 
+
+
+**Output:**
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/fa4831b8-661a-4ba4-b53d-11d515a0012d)
+
+
+Again, we can see that Margaret Peacock is way ahead comparing to the rest of employees in total sales, but very curious is a thing, that she has not the best average sales.  Let's see, how she performed in that case during the year on a bar chart:
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/899dd4d0-eb40-4137-8312-778ffea5d60e)
+
+
+Margaret Peacock was above the average for total company only in 5 months, which means she was below 50%. We can see a strong peak in Januray. Let's see, what happened in that period:
+
+
+        SELECT Concat(e.firstname, ' ', e.lastname)
+               Employee,
+               o.orderid,
+               Count(od.productid)
+               '# Items',
+               Format(Sum(od.quantity * od.unitprice * ( 1 - od.discount )), '### ###')
+               Sales
+        FROM   [order details] od
+               JOIN orders o
+                 ON od.orderid = o.orderid
+               JOIN employees e
+                 ON o.employeeid = e.employeeid
+        WHERE  Year(o.orderdate) = 1997
+               AND Month(o.orderdate) = 1
+        GROUP  BY Concat(e.firstname, ' ', e.lastname),
+                  o.orderid
+        ORDER  BY 1 DESC; 
+
+
+**Output:**
+
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/1315ca45-6e5e-4888-bc1d-74b39afc614a)
+
+
+We can see an order **NO 10417**, which definitely increased the average for Mrs. Peacock. Let's get deeper into that order:
+
+
+        SELECT o.orderid,
+               p.productname,
+               od.quantity,
+               od.unitprice
+        FROM   [order details] od
+               JOIN orders o
+                 ON od.orderid = o.orderid
+               JOIN employees e
+                 ON o.employeeid = e.employeeid
+               JOIN products p
+                 ON od.productid = p.productid
+        WHERE  o.orderid = 10417
+        ORDER  BY 3 DESC; 
+
+
+**Output:**
+
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/35e63f2a-79b9-463e-afd6-f6920dd2a7b8)
+
+
+The peak was caused a big order (50qty) on an expensive product named 'Côte de Blaye' and it had a significant impact on a monthly average result.
+
+
+But don't remember that number of orders may have a big impact on the total sales value. Let's check if there exists any correlation:
+
+        WITH correlation
+             AS (SELECT Concat(E.firstname, ' ', e.lastname)                  Employee,
+                        Sum(od.quantity * od.unitprice * ( 1 - od.discount )) Sales,
+                        Count(DISTINCT OD.orderid)                            Orders
+                 FROM   [order details] od
+                        JOIN orders o
+                          ON od.orderid = o.orderid
+                        JOIN employees e
+                          ON o.employeeid = e.employeeid
+                 WHERE  Year(O.orderdate) = 1997
+                 GROUP  BY Concat(E.firstname, ' ', e.lastname))
+        SELECT Round(( Avg(sales * orders) - ( Avg(sales) * Avg(orders) ) ) / (
+                            Stdevp(sales) * Stdevp(orders) ), 2)
+               'Pearson Linear Correlation'
+        FROM   correlation 
+
+
+**Output:**
+
+![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/24f2baab-4beb-47d9-890d-75da974e429f)
+
+
+We can see that there is strong, significant correlation between number of orders and total sales. This means that as the number of orders increases, total sales also increase.
+
+
+**A few words in conclusion**
+
+
+Thank you for reading the entire descritpion. The purpose of the project was about showing sample of my skills as  a Power BI Analyst. If you are interested in cooperation with me or you have any question, you can contact with me via my LinkedIn profile:
+
+https://www.linkedin.com/in/micha%C5%82-pugaczew-a963221a3/
