@@ -185,7 +185,7 @@ SQL Calculations:
       1 ASC;
 
 
-Output:
+**Output:**
 
 ![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/d0e0c1e3-ba36-4104-8e84-ae40ee75424b)
 
@@ -215,6 +215,8 @@ A full description of the DAX metrics used can be found on the last page of the 
 
 
 # Custom SQL analyze - year 1997
+
+In this part, we will perform a simple analyze using SQL language. At first, we will take a look on employees and their productivity:
 
 **Employee productivity:**
 
@@ -395,7 +397,7 @@ But don't remember that number of orders may have a big impact on the total sale
 ![image](https://github.com/michalpugaczew/PowerBI-Project/assets/152793313/24f2baab-4beb-47d9-890d-75da974e429f)
 
 
-We can see that there is strong, significant correlation between number of orders and total sales. This means that as the number of orders increases, total sales also increase.
+We can see that there is strong, significant correlation between number of orders and total sales. This means that as the number of orders increases, total sales also increase and that explains the good result of one of the employees, mrs Peacock.
 
 
 **A few words in conclusion**
